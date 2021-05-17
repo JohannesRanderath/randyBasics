@@ -42,6 +42,30 @@ module RandyBasics
 			return quickSortP(l, comp) + quickSortP(r, comp)
 		end
 		
+		def self.mergeSortP (arg, comp) 
+			if arg.size < 2
+				return arg
+			end
+			l = mergeSortP(arg.slice(0...arg.size/2), comp) + [Float::INFINITY]
+			r = mergeSortP(arg.slice(arg.size/2...arg.size), comp) + [Float::INFINITY]
+			i,j = 0, 0
+			while i+j < arg.size do
+				if i >= l.size
+					arg[i+-1] = r[j]
+					j += 1
+				elsif j >= r.size
+					arg[i+j-1] = l[i]
+					i += 1
+				elsif comp.call(l[i], r[j])
+					arg[i+j] = l[i]
+					i += 1
+				else
+					arg[i+j] = r[j]
+					j += 1
+				end
+			end
+			return arg
+		end
 		
 		
 		
@@ -131,6 +155,16 @@ module RandyBasics
 				arg[i] = tmp
 			end	
 			return arg
+		end
+
+		def self.mergeSort (arg, *par)
+			unless isArray? arg
+				return arg
+			end
+
+			comp = getMode(par[0])
+
+			return mergeSortP(arg, comp)
 		end
 
 	end
