@@ -169,4 +169,107 @@ module RandyBasics
 
 	end
 
+
+	module DataStructures
+		protected
+		class Element 
+			attr_accessor :content, :nxt
+			def initialize arg, *nxtarg
+				@content = arg
+				@nxt = nxtarg[0]
+			end
+			def getDataType 
+				return arg.class
+			end
+		end
+
+		public
+		class Stack 
+			attr_accessor :first, :size
+
+			def initialize
+				@dummy = Element.new(nil)
+				@dummy.nxt = @dummy
+				@first = @dummy
+				@size = 0
+			end
+			def push arg
+				if arg != nil
+					@first = Element.new arg, @first
+					@size += 1
+				else 
+					puts "No content given. Aborting"
+				end
+			end
+			def pop 
+				unless empty?
+					res = @first.content
+					@first = @first.nxt
+					@size -= 1
+					return res
+				end
+				puts "Stack empty"
+				return nil
+			end
+			def empty? 
+				return @first.content == nil
+			end
+			def toArray
+				array = []
+				cur = @first
+				until cur.content == nil
+					array[array.size] = cur.content
+					cur = cur.nxt
+				end
+				return array
+			end
+		end
+
+		class Queue 
+			attr_accessor :first, :size
+			 def initialize
+				@dummy = Element.new(nil)
+				@dummy.nxt = @dummy
+				@first = @dummy
+				@size = 0
+			end
+			def queue arg
+				if arg != nil
+					if empty? 
+						@dummy.nxt = Element.new(arg, @dummy)
+						@first = @dummy.nxt
+					else
+						@dummy.nxt.nxt = Element.new(arg, @dummy)
+						@dummy.nxt = @dummy.nxt.nxt
+					end
+					@size += 1
+				else 
+					puts "No content given. Aborting"
+				end
+			end
+			def dequeue 
+				unless empty?
+					res = @first.content
+					@first = @first.nxt
+					@size -= 1
+					return res
+				end
+				puts "Stack empty"
+				return nil
+			end
+			def empty? 
+				return @first.content == nil
+			end
+			def toArray
+				array = []
+				cur = @first
+				until cur.content == nil
+					array[array.size] = cur.content
+					cur = cur.nxt
+				end
+				return array
+			end
+		end
+	end
+
 end
