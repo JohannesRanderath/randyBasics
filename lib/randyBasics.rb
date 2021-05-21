@@ -7,14 +7,14 @@ module RandyBasics
 			if par == '>'
 				return -> (x,y) {return x > y}
 			else
-				puts "No specific mode given or ascending specified. Sorting ascending"
+				#puts "No specific mode given or ascending specified. Sorting ascending"
 				return ->(x,y) {return x < y}
 			end
 		end
 		
 		def self.isArray? (arg) 
 			if !arg.is_a? Array || arg.size < 1
-				puts "WARNING: No array to sort or array empty. No sorting done."
+				#puts "WARNING: No array to sort or array empty. No sorting done."
 				return nil
 			end
 			return arg
@@ -76,8 +76,8 @@ module RandyBasics
 			end
 		
 			comp = getMode(par[0])
-		
-			puts "Performing quickSort..."
+			
+			#puts "Performing quickSort..."
 			return quickSortP arg, comp
 		end
 
@@ -89,7 +89,7 @@ module RandyBasics
 
 			comp = getMode(par[0])
 
-			puts "Performing insertionSort..."
+			#puts "Performing insertionSort..."
 			for i in (1...arg.size) do
 
 				j = 0
@@ -183,24 +183,34 @@ module RandyBasics
 			end
 		end
 
+		class ClosedQueueError < StopIteration
+
+		end
+
 		public
 		class Stack 
 			attr_accessor :first, :size
+			attr_reader :closed
 
 			def initialize
 				@dummy = Element.new(nil)
 				@dummy.nxt = @dummy
 				@first = @dummy
 				@size = 0
+				@closed = false
 			end
-			def push arg
+			def << arg
+				if closed?
+					raise ClosedQueueError, "Stack already closed"
+				end
 				if arg != nil
 					@first = Element.new arg, @first
 					@size += 1
 				else 
-					puts "No content given. Aborting"
+					raise ArgumentError, "No content given."
 				end
 			end
+			alias :push, :<<
 			def pop 
 				unless empty?
 					res = @first.content
@@ -208,7 +218,7 @@ module RandyBasics
 					@size -= 1
 					return res
 				end
-				puts "Stack empty"
+				raise IndexError, "Stack empty"
 				return nil
 			end
 			def empty? 
@@ -223,17 +233,30 @@ module RandyBasics
 				end
 				return array
 			end
+			def clear
+				@first = @dummy
+				@size = 0
+			end
+			def close
+				@closed = true
+			end
 		end
 
 		class Queue 
 			attr_accessor :first, :size
+			attr_reader :closed
+			alias :length, :size
 			 def initialize
 				@dummy = Element.new(nil)
 				@dummy.nxt = @dummy
 				@first = @dummy
 				@size = 0
+				@closed = false
 			end
-			def queue arg
+			def << arg
+				if closed?
+					raise ClosedQueueError, "Queue closed"
+				end
 				if arg != nil
 					if empty? 
 						@dummy.nxt = Element.new(arg, @dummy)
@@ -244,19 +267,25 @@ module RandyBasics
 					end
 					@size += 1
 				else 
-					puts "No content given. Aborting"
+					raise ArgumentError, "No content given"
 				end
 			end
-			def dequeue 
+			alias :push, :<<
+			alias :queue, :<<
+			alias :enq, :<<
+			def pop 
 				unless empty?
 					res = @first.content
 					@first = @first.nxt
 					@size -= 1
 					return res
 				end
-				puts "Stack empty"
+				raise IndexError, "Queue empty"
 				return nil
 			end
+			alias :deq, :pop
+			alias :dequeue, :pop
+			alias :shift, :pop
 			def empty? 
 				return @first.content == nil
 			end
@@ -268,6 +297,13 @@ module RandyBasics
 					cur = cur.nxt
 				end
 				return array
+			end
+			def clear 
+				@first = @dummy
+				@size = 0
+			end
+			def close
+				closed = true
 			end
 		end
 	end
